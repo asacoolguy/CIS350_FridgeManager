@@ -1,0 +1,51 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+
+    <TextView android:text="@string/MainMenuText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Login Page"
+        android:id="@+id/LoginButton"
+        android:onClick="onLoginButtonClick"
+        android:layout_below="@+id/textView"
+        android:layout_alignRight="@+id/FridgeButton"
+        android:layout_alignEnd="@+id/FridgeButton" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Fridge Page"
+        android:id="@+id/FridgeButton"
+        android:onClick="onFridgeButtonClick"
+        android:layout_below="@+id/LoginButton"
+        android:layout_centerHorizontal="true"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Shopping List Page"
+        android:id="@+id/ShoppingListButton"
+        android:onClick="onShoppingButtonClick"
+        android:layout_below="@+id/FridgeButton"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Recipe Page"
+        android:id="@+id/RecipeButton"
+        android:onClick="onRecipeButtonClick"
+        android:layout_below="@+id/ShoppingListButton"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
