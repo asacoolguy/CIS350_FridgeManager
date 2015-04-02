@@ -9,10 +9,15 @@ import android.view.View;
 import android.content.Context;
 import android.widget.*;
 
+import org.apache.http.client.HttpClient;
+
+import java.io.IOException;
+
 
 public class LoginActivity extends ActionBarActivity {
 
     private EditText passwordText, emailText;
+    private HTMLRequester htmlRequester = HTMLRequester.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,17 +59,30 @@ public class LoginActivity extends ActionBarActivity {
 
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
+        String s = "";
+//        try {
+//            s = htmlRequester.HTMLRequest("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
+//        } catch (IOException e) {
+//            System.out.println("Failed");
+//        }
+        System.out.println(s);
         boolean isValidated = validateLoginCredentials(email, password);
         if (isValidated) {
             Intent i = new Intent(this,FridgeActivity.class);
-
             startActivityForResult(i, Constants.FridgeActivity_ID);
+            Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Incorrect login ID or password", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private boolean validateLoginCredentials(String email, String password) {
-        return true;
+        if (email.equals("test") && password.equals("1234")) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void debug(String msg) {
