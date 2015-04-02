@@ -7,6 +7,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.parse.Parse;
+
 
 public class MainActivity extends ActionBarActivity {
     public static final int LoginActivity_ID = 1;
@@ -17,6 +19,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "RPkBsLufAmYR4TCMTrcTX4Dgq0iSvaPRTvVMPxLB", "RZKk7RHWH2pNxCrDCp7bg73dOYWCMfOCwIXIDwtY");
         setContentView(R.layout.activity_main);
     }
 
