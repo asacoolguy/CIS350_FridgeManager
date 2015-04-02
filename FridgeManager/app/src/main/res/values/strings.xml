@@ -14,5 +14,6 @@
     <string name="title_activity_shopping_list">ShoppingListActivity</string>
     <string name="title_activity_fridge">FridgeActivity</string>
     <string name="title_activity_recipe">RecipeActivity</string>
+    <string name="Login">Login</string>
 
 </resources>
