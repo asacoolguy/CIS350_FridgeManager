@@ -60,13 +60,9 @@ public class LoginActivity extends ActionBarActivity {
 
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-        String s = "";
-        try {
-            s = htmlRequester.HTMLRequest("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
-        } catch (IOException e) {
-            System.out.println("Failed");
-        }
-        System.out.println(s);
+        String s = htmlRequester.doInBackground("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
+
+        debug(s);
         boolean isValidated = validateLoginCredentials(email, password);
         if (isValidated) {
             Intent i = new Intent(this,FridgeActivity.class);
