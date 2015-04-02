@@ -6,14 +6,21 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.content.Context;
+import android.widget.*;
 
 
 public class LoginActivity extends ActionBarActivity {
+
+    private EditText passwordText, emailText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        passwordText = (EditText)findViewById(R.id.loginPassword);
+        emailText = (EditText)findViewById(R.id.loginEmail);
     }
 
 
@@ -37,6 +44,36 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Login button event handler. Makes the login request.
+     * @param v
+     */
+    public void onLoginButtonClick(View v) {
+
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        boolean isValidated = validateLoginCredentials(email, password);
+        if (isValidated) {
+            Intent i = new Intent(this,FridgeActivity.class);
+
+            startActivityForResult(i, Constants.FridgeActivity_ID);
+        }
+
+    }
+
+    private boolean validateLoginCredentials(String email, String password) {
+        return true;
+    }
+
+    public void debug(String msg) {
+        Context context = getApplicationContext();
+        CharSequence text = msg;
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
     public void onReturnButtonClick(View v){
