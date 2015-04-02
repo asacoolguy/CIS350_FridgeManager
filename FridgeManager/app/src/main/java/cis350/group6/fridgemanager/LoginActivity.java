@@ -17,7 +17,7 @@ import java.io.IOException;
 public class LoginActivity extends ActionBarActivity {
 
     private EditText passwordText, emailText;
-    private HTMLRequester htmlRequester = HTMLRequester.getInstance();
+    private HTMLRequester htmlRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,7 @@ public class LoginActivity extends ActionBarActivity {
 
         passwordText = (EditText)findViewById(R.id.loginPassword);
         emailText = (EditText)findViewById(R.id.loginEmail);
+        htmlRequester = HTMLRequester.getInstance();
     }
 
 
@@ -60,11 +61,11 @@ public class LoginActivity extends ActionBarActivity {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
         String s = "";
-//        try {
-//            s = htmlRequester.HTMLRequest("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
-//        } catch (IOException e) {
-//            System.out.println("Failed");
-//        }
+        try {
+            s = htmlRequester.HTMLRequest("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
+        } catch (IOException e) {
+            System.out.println("Failed");
+        }
         System.out.println(s);
         boolean isValidated = validateLoginCredentials(email, password);
         if (isValidated) {

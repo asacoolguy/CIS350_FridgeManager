@@ -1,5 +1,7 @@
 package cis350.group6.fridgemanager;
 
+import android.os.AsyncTask;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -16,13 +18,18 @@ import java.io.IOException;
  *
  * Created by root on 4/2/15.
  */
-public class HTMLRequester {
+public class HTMLRequester extends AsyncTask<String, String, String> {
     private static HTMLRequester instance = null;
 
     private HttpClient httpclient;
 
     protected HTMLRequester() {
         httpclient = new DefaultHttpClient();
+    }
+
+    @Override
+    protected String doInBackground(String... URL) {
+        return "Test";
     }
 
     public String HTMLRequest(String URL) throws IOException{
