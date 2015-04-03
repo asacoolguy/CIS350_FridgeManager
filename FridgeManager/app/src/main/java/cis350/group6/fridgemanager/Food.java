@@ -10,6 +10,7 @@ import java.util.Date;
  */
 @ParseClassName("Food")
 public class Food extends ParseObject{
+
     public Food(){}
 
     public String getName(){
@@ -55,4 +56,8 @@ public class Food extends ParseObject{
     public void setExpireDate(Date expireDate){
         put("expiresAt", expireDate);
     }
+
+    public boolean getFavorite() {return getBoolean("favorite");}
+
+    public void setFavorite(boolean favorite){ put ("favorite", favorite);}
 }

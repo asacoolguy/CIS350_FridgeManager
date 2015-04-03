@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -27,6 +28,7 @@ import org.joda.time.Days;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -69,17 +71,20 @@ public class FridgeActivity extends ActionBarActivity {
         DateTime expire = new DateTime(f.getExpireDate());
         DateTime now = new DateTime(new Date());
         int daysLeft = Days.daysBetween(now, expire).getDays();
-        list.add(f.getName() + "    " + f.getQuantity() +  "    " + f.getUnits() + "    " + daysLeft + " days left");
+        list.add(f.getName() + "    " + f.getQuantity() +  "    " + f.getUnits() + "     days left: " + daysLeft);
+        Collections.sort(list, new FoodComparator());
     }
 
     public void fillFridge(){
         ParseQuery<Food> fridge = ParseQuery.getQuery(Food.class);
+        fridge.orderByAscending("expiresAt");
         fridge.findInBackground(new FindCallback<Food>() {
             @Override
             public void done(List<Food> results, ParseException e) {
                 ListView listview = (ListView) findViewById(R.id.fridgeView);
                 list = new ArrayList<String>();
 
+                // adds list of foods to result
                 for (Food f : results) {
                     addItemToFridge(f);
                 }
@@ -125,10 +130,16 @@ public class FridgeActivity extends ActionBarActivity {
                     String units = String.valueOf(editUnits.getText());
                     EditText editExpiration = (EditText) dialogLayout.findViewById(R.id.editExpiration);
                     String expiration = String.valueOf(editExpiration.getText());
+                    CheckBox favoriteCheck = (CheckBox) dialogLayout.findViewById(R.id.favoriteCheckBox);
+                    Boolean favorite = favoriteCheck.isChecked();
+
                     Food newAddition = new Food();
+                    // append * to name if the food is a favorite
+                    if (favorite) name = name + "*";
                     newAddition.setName(name);
                     newAddition.setQuantity(Double.parseDouble(amount));
                     newAddition.setUnits(units);
+                    newAddition.setFavorite(favorite);
                     SimpleDateFormat  format = new SimpleDateFormat("MM/dd/yyyy");
                     try {
                         newAddition.setExpireDate(format.parse(expiration));
@@ -150,6 +161,7 @@ public class FridgeActivity extends ActionBarActivity {
             }
         });
         dialog.show();
+
     }
 
     public void onReturnButtonClick(View v){
