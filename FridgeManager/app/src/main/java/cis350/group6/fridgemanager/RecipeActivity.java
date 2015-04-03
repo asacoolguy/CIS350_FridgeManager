@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -27,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -39,6 +42,9 @@ public class RecipeActivity extends ActionBarActivity {
     private ArrayList<Recipe> recipeList;
     private static ArrayList<JSONObject> JSONrecipes = null;
     private GridView gridView;
+    private Spinner cuisineFilterSpinner, courseFilterSpinner;
+    private String filteringCuisine = "all";
+    private String filteringCourse = "all";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +53,8 @@ public class RecipeActivity extends ActionBarActivity {
 
         if(JSONrecipes == null){
             JSONrecipes = new ArrayList<JSONObject>();
-            prepareList();
         }
+        prepareList();
 
         if(mAdapter == null){
             // prepared arraylist and passed it to the Adapter class
@@ -69,11 +75,49 @@ public class RecipeActivity extends ActionBarActivity {
                 Toast.makeText(RecipeActivity.this, mAdapter.getRecipeName(position), Toast.LENGTH_SHORT).show();
             }
         });
+
+        // set the spinners
+        cuisineFilterSpinner = (Spinner) findViewById(R.id.RecipeCuisineFilterSpinner);
+        cuisineFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if(id == 0){ filteringCuisine = "all"; }
+                else if (id == 1){ filteringCuisine = "american"; }
+                else if (id == 2){ filteringCuisine = "italian"; }
+                else if (id == 3){ filteringCuisine = "chinese"; }
+                else if (id == 4){ filteringCuisine = "japanese"; }
+                else if (id == 5){ filteringCuisine = "thai"; }
+                else if (id == 6){ filteringCuisine = "mexican"; }
+                else if (id == 7){ filteringCuisine = "french"; }
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                return;
+            }
+        });
+        courseFilterSpinner = (Spinner) findViewById(R.id.RecipeCourseFilterSpinner);
+        courseFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if(id == 0){ filteringCourse = "all"; }
+                else if (id == 1){ filteringCourse = "Main+Dishes"; }
+                else if (id == 2){ filteringCourse = "Desserts"; }
+                else if (id == 3){ filteringCourse = "Salads"; }
+                else if (id == 4){ filteringCourse = "Breakfast+and+Brunch"; }
+                else if (id == 5){ filteringCourse = "Soups"; }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                return;
+            }
+
+        });
     }
 
     public void prepareList()
     {
-        JSONObject searchReturn= searchRecipes("recipe");
+        JSONObject searchReturn= searchRecipes("recipe",filteringCuisine, filteringCourse);
         try {
             JSONArray returnedRecipes = searchReturn.getJSONArray("matches");
             int numRecipes = 10;
@@ -82,6 +126,7 @@ public class RecipeActivity extends ActionBarActivity {
         catch(JSONException e){
             e.printStackTrace();
         }
+
     }
 
     @Override
@@ -177,12 +222,41 @@ public class RecipeActivity extends ActionBarActivity {
         return builder.toString();
     }
 
+
     public void onResponseReceived(JSONObject json){
         JSONrecipes.add(json);
     }
-    JSONObject searchRecipes(String query){
+
+
+    private JSONObject searchRecipes(String query, String cuisine, String course){
+        String executingURL = "http://api.yummly.com/v1/api/recipes?_app_id=01b9fa3b&_app_key=2eb9083c6cea006509068f9a5ee9bf97" +
+                "&q=" + query;
+
+        // change the search query if filtering by cuisine
         try{
-            return new GetRecipeTask(this).execute("http://api.yummly.com/v1/api/recipes?_app_id=01b9fa3b&_app_key=2eb9083c6cea006509068f9a5ee9bf97&q=" + query).get();
+            if (!cuisine.equals("all")){
+                cuisine = "cuisine^cuisine-" + cuisine;
+                executingURL = executingURL + "&allowedCuisine" + URLEncoder.encode("[]", "UTF-8") + "=" + URLEncoder.encode(cuisine, "UTF-8");
+            }
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+        // change the search query if filtering by course
+        try{
+            //if (!course.equals("all")){
+                course = "course^course-" + course;
+                executingURL = executingURL + "&allowedCourse" + URLEncoder.encode("[]", "UTF-8") + "=" + URLEncoder.encode(course, "UTF-8");
+            //}
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
+
+
+
+        try{
+            JSONObject ans = new GetRecipeTask(this).execute(executingURL).get();
+            return ans;
         }
         catch(ExecutionException e){
             e.printStackTrace();
@@ -192,7 +266,7 @@ public class RecipeActivity extends ActionBarActivity {
         return null;
     }
 
-    JSONObject getRecipe(String id){
+    private JSONObject getRecipe(String id){
         try{
             return new GetRecipeTask(this).execute("http://api.yummly.com/v1/api/recipe/" + id + "?_app_id=01b9fa3b&_app_key=2eb9083c6cea006509068f9a5ee9bf97").get();
         }
@@ -220,5 +294,30 @@ public class RecipeActivity extends ActionBarActivity {
             e.printStackTrace();
         }
         return parsedRecipes;
+    }
+
+    // refreshes the gridview based on the new set of parameters
+    public void refreshSearchResults(){
+        if(JSONrecipes == null){
+            JSONrecipes = new ArrayList<JSONObject>();
+        }
+        Toast.makeText(RecipeActivity.this, "searching...", Toast.LENGTH_SHORT).show();
+        prepareList();
+
+        // failed attempt that updating gridview. please fix
+        if(mAdapter != null){
+            mAdapter.setRecipes(recipeList);
+            //mAdapter = new GridViewAdapter(this,recipeList);
+            gridView.invalidateViews();
+            gridView.setAdapter(mAdapter);
+        }
+    }
+
+    public void onReturnButtonClick(View v){
+        finish();
+    }
+
+    public void onSearchButtonClick(View v){
+        refreshSearchResults();
     }
 }
