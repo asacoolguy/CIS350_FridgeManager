@@ -44,6 +44,15 @@
         android:layout_below="@+id/RecipeCourseFilterSpinner"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+    <EditText
+        android:id="@+id/search_recipes_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/search_hint"
+        android:layout_toRightOf="@+id/RecipeSearchButton"
+        android:layout_below="@+id/Recipe_ReturnButton"
+        android:inputType="text"
+        android:imeOptions="actionSend" />
     <GridView
         android:layout_height="wrap_content"
         android:id="@+id/gridView1"

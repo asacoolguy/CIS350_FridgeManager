@@ -83,6 +83,12 @@ public class Recipe {
         return largeImg;
     }
 
+    public String[] getIngredients(){
+        return ingredients;
+    }
+    public String[] getingredients(){
+        return ingredients;
+    }
     public static Drawable drawableFromUrl(String url){
         Drawable drawable = null;
 

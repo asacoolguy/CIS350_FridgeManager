@@ -33,9 +33,9 @@ public class GridViewAdapter extends BaseAdapter {
     }
 
     @Override
-    public String getItem(int position) {
+    public Recipe getItem(int position) {
         // TODO Auto-generated method stub
-        return recipes.get(position).getName();
+        return recipes.get(position);
     }
 
     public String getRecipeName(int position) {
