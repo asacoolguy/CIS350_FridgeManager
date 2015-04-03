@@ -4,12 +4,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -43,6 +47,7 @@ public class RecipeActivity extends ActionBarActivity {
     private static ArrayList<JSONObject> JSONrecipes = null;
     private GridView gridView;
     private Spinner cuisineFilterSpinner, courseFilterSpinner;
+    private EditText searchEditText;
     private String filteringCuisine = "all";
     private String filteringCourse = "all";
 
@@ -72,7 +77,9 @@ public class RecipeActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                Toast.makeText(RecipeActivity.this, mAdapter.getRecipeName(position), Toast.LENGTH_SHORT).show();
+                Recipe clicked = mAdapter.getItem(position);
+                Toast.makeText(RecipeActivity.this, "Added " + clicked.getingredients().length + " items to shopping list.", Toast.LENGTH_SHORT).show();
+                ShoppingListActivity.addRecipe(mAdapter.getItem(position));
             }
         });
 
@@ -81,7 +88,7 @@ public class RecipeActivity extends ActionBarActivity {
         cuisineFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(id == 0){ filteringCuisine = "all"; }
+                if(id == 0){ filteringCuisine = "all cuisines"; }
                 else if (id == 1){ filteringCuisine = "american"; }
                 else if (id == 2){ filteringCuisine = "italian"; }
                 else if (id == 3){ filteringCuisine = "chinese"; }
@@ -99,7 +106,7 @@ public class RecipeActivity extends ActionBarActivity {
         courseFilterSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if(id == 0){ filteringCourse = "all"; }
+                if(id == 0){ filteringCourse = "all courses"; }
                 else if (id == 1){ filteringCourse = "Main+Dishes"; }
                 else if (id == 2){ filteringCourse = "Desserts"; }
                 else if (id == 3){ filteringCourse = "Salads"; }
@@ -111,13 +118,31 @@ public class RecipeActivity extends ActionBarActivity {
             public void onNothingSelected(AdapterView<?> parentView) {
                 return;
             }
-
         });
+
+        searchEditText = (EditText) findViewById(R.id.search_recipes_text);
+//        searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                boolean handled = false;
+//                if (actionId == EditorInfo.IME_ACTION_SEND) {
+//                    Toast.makeText(RecipeActivity.this, v.getText().toString(), Toast.LENGTH_SHORT).show();
+//                    handled = true;
+//                }
+//                return handled;
+//            }
+//        });
     }
 
     public void prepareList()
     {
-        JSONObject searchReturn= searchRecipes("recipe",filteringCuisine, filteringCourse);
+        JSONObject searchReturn;
+        if(searchEditText == null || searchEditText.getText().toString().equals("")){
+            searchReturn = searchRecipes("recipe",filteringCuisine, filteringCourse);
+        }
+        else{
+            searchReturn = searchRecipes(searchEditText.getText().toString(),filteringCuisine, filteringCourse);
+        }
         try {
             JSONArray returnedRecipes = searchReturn.getJSONArray("matches");
             int numRecipes = 10;

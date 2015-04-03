@@ -23,4 +23,5 @@ dependencies {
     compile fileTree(dir: 'src/main/libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.parse.bolts:bolts-android:1.+'
+    compile files('src/main/libs/joda-time-2.7.jar')
 }
