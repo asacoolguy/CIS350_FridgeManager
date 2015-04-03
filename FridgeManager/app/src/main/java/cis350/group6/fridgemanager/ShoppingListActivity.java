@@ -1,5 +1,6 @@
 package cis350.group6.fridgemanager;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,9 +11,26 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import java.util.ArrayList;
+import java.util.List;
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.util.Log;
+
+import java.util.List;
 
 
 public class ShoppingListActivity extends ActionBarActivity {
+    ListView list;
+    List<ParseObject> ob;
+    ProgressDialog mProgressDialog;
+    private List<String> shoppinglist = null;
 
     //array of options --> arrayadapter -> listview
 
@@ -22,29 +40,98 @@ public class ShoppingListActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
-        populateListView();
+        add("hello", 3);
+        add("there", 3);
+        add("my", 3);
+        add("name", 3);
+
+        new populateListView().execute();
         registerClickCallback();
     }
-    private void populateListView(){
-        // create the list
-        String[] myitems = {"blue", "green", "purple", "red"};
-        //build the adapter
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.shoppingitem, myitems);
-        //configure the list view
-        ListView list = (ListView) findViewById(R.id.shoppinglist);
-        list.setAdapter(adapter);
+    private class populateListView extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Create a progressdialog
+            mProgressDialog = new ProgressDialog(ShoppingListActivity.this);
+            // Set progressdialog title
+            mProgressDialog.setTitle("Parse.com Custom ListView Tutorial");
+            // Set progressdialog message
+            mProgressDialog.setMessage("Loading...");
+            mProgressDialog.setIndeterminate(false);
+            // Show progressdialog
+            mProgressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Create the array
+            shoppinglist = new ArrayList<String>();
+            try {
+                ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
+                ob = query.find();
+                for (ParseObject shoppingsearch : ob) {
+                    // Locate images in flag column
+                    String shoppingitem = (shoppingsearch.getString("name"));
+                    int quantity = shoppingsearch.getInt("quantity");
+                    shoppinglist.add(shoppingitem);
+                }
+            } catch (ParseException e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // Locate the listview in listview_main.xml
+            list = (ListView) findViewById(R.id.shoppinglist);
+            // Pass the results into ListViewAdapter.java
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ShoppingListActivity.this,
+                    R.layout.shoppingitem,
+                    shoppinglist);
+            // Binds the Adapter to the ListView
+            list.setAdapter(adapter);
+            // Close the progressdialog
+            mProgressDialog.dismiss();
+        }
     }
     private void registerClickCallback(){
-        ListView list = (ListView) findViewById(R.id.shoppinglist);
+        list = (ListView) findViewById(R.id.shoppinglist);
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View viewClicked, int position, long id) {
                 TextView textView = (TextView) viewClicked;
                 String message = "you clicked #" + position + ", which is String: " + textView.getText().toString();
                 Toast.makeText(ShoppingListActivity.this, message, Toast.LENGTH_LONG).show();
+                remove(textView.getText().toString());
                 return true;
             }
         });
+    }
+    public void remove(String name){
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
+            ob = query.find();
+            int i =0;
+            for (ParseObject shoppingsearch : ob) {
+                // Locate images in flag column
+                String shoppingitem = (shoppingsearch.getString("name"));
+                if (shoppingitem.equals(name)){
+                    shoppingsearch.deleteInBackground();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public void add(String name, int quantity){
+        ParseObject newitem = new ParseObject("Shoppinglist");
+        newitem.put("name", name);
+        newitem.put("quantity", quantity);
+        newitem.saveInBackground();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
