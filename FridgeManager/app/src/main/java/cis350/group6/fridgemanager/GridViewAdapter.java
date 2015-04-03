@@ -21,6 +21,11 @@ public class GridViewAdapter extends BaseAdapter {
         this.activity = activity;
     }
 
+    public void setRecipes(ArrayList<Recipe> recipes){
+        this.recipes = recipes;
+        this.notifyDataSetChanged();
+    }
+
     @Override
     public int getCount() {
         // TODO Auto-generated method stub
