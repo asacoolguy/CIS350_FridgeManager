@@ -20,21 +20,52 @@
             android:layout_marginBottom="20dp" />
 
         <ListView
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="@dimen/dialog_fixed_width_minor"
             android:id="@+id/fridgeView"
             android:headerDividersEnabled="false"
             android:smoothScrollbar="true"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:choiceMode="singleChoice"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="New Item"
-            android:id="@+id/addItemButton"
-            android:onClick="onAddItemClick"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="20dp" />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:padding="20dp">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Item"
+                android:id="@+id/addItemButton"
+                android:onClick="onAddItemClick"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove Item"
+                android:onClick="onRemoveItemClick"
+                android:id="@+id/removeButton" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:onClick="onPlusItemClick"
+                android:id="@+id/plusButton" />
+
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="-"
+                android:onClick="onMinusItemClick"
+                android:id="@+id/minusButton" />
+        </LinearLayout>
 
         <Button
             android:layout_width="wrap_content"
