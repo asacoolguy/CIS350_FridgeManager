@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,22 +29,17 @@ import java.util.List;
 
 public class ShoppingListActivity extends ActionBarActivity {
     ListView list;
-    List<ParseObject> ob;
     ProgressDialog mProgressDialog;
-    private List<String> shoppinglist = null;
+    private List<shippingitem> shoppinglist = null;
+    private EditText nametext, quantitytext;
 
-    //array of options --> arrayadapter -> listview
-
-    //listview is going to be a set of views::items
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shopping_list);
-        add("hello", 3);
-        add("there", 3);
-        add("my", 3);
-        add("name", 3);
+        nametext = (EditText)findViewById(R.id.namefield);
+        quantitytext = (EditText)findViewById(R.id.quantity);
 
         new populateListView().execute();
         registerClickCallback();
@@ -66,15 +62,18 @@ public class ShoppingListActivity extends ActionBarActivity {
         @Override
         protected Void doInBackground(Void... params) {
             // Create the array
-            shoppinglist = new ArrayList<String>();
+            shoppinglist = new ArrayList<shippingitem>();
             try {
                 ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
-                ob = query.find();
+                List<ParseObject> ob = query.find();
                 for (ParseObject shoppingsearch : ob) {
                     // Locate images in flag column
                     String shoppingitem = (shoppingsearch.getString("name"));
                     int quantity = shoppingsearch.getInt("quantity");
-                    shoppinglist.add(shoppingitem);
+                    shippingitem temp = new shippingitem();
+                    temp.setname(shoppingitem);
+                    temp.setquantity(quantity);
+                    shoppinglist.add(temp);
                 }
             } catch (ParseException e) {
                 Log.e("Error", e.getMessage());
@@ -88,8 +87,7 @@ public class ShoppingListActivity extends ActionBarActivity {
             // Locate the listview in listview_main.xml
             list = (ListView) findViewById(R.id.shoppinglist);
             // Pass the results into ListViewAdapter.java
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(ShoppingListActivity.this,
-                    R.layout.shoppingitem,
+            ListViewAdapter adapter = new ListViewAdapter(ShoppingListActivity.this,
                     shoppinglist);
             // Binds the Adapter to the ListView
             list.setAdapter(adapter);
@@ -99,21 +97,30 @@ public class ShoppingListActivity extends ActionBarActivity {
     }
     private void registerClickCallback(){
         list = (ListView) findViewById(R.id.shoppinglist);
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View viewClicked, int position, long id) {
-                TextView textView = (TextView) viewClicked;
-                String message = "you clicked #" + position + ", which is String: " + textView.getText().toString();
-                Toast.makeText(ShoppingListActivity.this, message, Toast.LENGTH_LONG).show();
-                remove(textView.getText().toString());
-                return true;
-            }
-        });
+//        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> parent, View viewClicked, int position, long id) {
+//                //ListviewItem textView = (shippingitem) viewClicked;
+//                String message = "you clicked #" + position + ", we will remove all " + viewClicked.getText().toString();
+//                Toast.makeText(ShoppingListActivity.this, message, Toast.LENGTH_LONG).show();
+//                remove(textView.getText().toString());
+//                return true;
+//            }
+//        });
+//        list.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View viewClicked, int position, long id) {
+//                TextView textView = (TextView) viewClicked;
+//                String message = "you clicked #" + position + ", we will increment " + textView.getText().toString();
+//                Toast.makeText(ShoppingListActivity.this, message, Toast.LENGTH_LONG).show();
+//                increment(textView.getText().toString());
+//            }
+//        });
     }
-    public void remove(String name){
+    public static void remove(String name){
         try {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
-            ob = query.find();
+            List<ParseObject>ob = query.find();
             int i =0;
             for (ParseObject shoppingsearch : ob) {
                 // Locate images in flag column
@@ -127,11 +134,54 @@ public class ShoppingListActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
-    public void add(String name, int quantity){
+    public static void increment(String name){
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
+            List<ParseObject> ob = query.find();
+            int i =0;
+            for (ParseObject shoppingsearch : ob) {
+                // Locate images in flag column
+                String shoppingitem = (shoppingsearch.getString("name"));
+                if (shoppingitem.equals(name)){
+                    shoppingsearch.increment("quantity");
+                    shoppingsearch.saveInBackground();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public static void add(String name, int quantity){
         ParseObject newitem = new ParseObject("Shoppinglist");
         newitem.put("name", name);
         newitem.put("quantity", quantity);
         newitem.saveInBackground();
+    }
+    public void refresh(View v){
+        List<shippingitem> shoppinglist = new ArrayList<shippingitem>();
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
+            List<ParseObject> ob = query.find();
+            for (ParseObject shoppingsearch : ob) {
+                // Locate images in flag column
+                String shoppingitem = (shoppingsearch.getString("name"));
+                int quantity = shoppingsearch.getInt("quantity");
+                shippingitem temp = new shippingitem();
+                temp.setname(shoppingitem);
+                temp.setquantity(quantity);
+                shoppinglist.add(temp);
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+        ListView list = (ListView) findViewById(R.id.shoppinglist);
+        // Pass the results into ListViewAdapter.java
+        ListViewAdapter adapter = new ListViewAdapter(ShoppingListActivity.this,
+                shoppinglist);
+        // Binds the Adapter to the ListView
+        list.setAdapter(adapter);
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -157,5 +207,12 @@ public class ShoppingListActivity extends ActionBarActivity {
 
     public void onReturnButtonClick(View v){
         finish();
+    }
+    public void onNewItemClick(View v){
+        String name = nametext.getText().toString();
+        int quantity = Integer.parseInt(quantitytext.getText().toString());
+        add(name, quantity);
+        nametext.setText("");
+        quantitytext.setText("");
     }
 }
