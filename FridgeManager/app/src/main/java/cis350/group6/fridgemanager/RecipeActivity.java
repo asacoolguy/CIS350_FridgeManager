@@ -77,8 +77,9 @@ public class RecipeActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position,
                                     long arg3) {
-                Toast.makeText(RecipeActivity.this, mAdapter.getRecipeName(position), Toast.LENGTH_SHORT).show();
-//                ShoppingListActivity.addRecipe(mAdapter.getItem(position));
+                Recipe clicked = mAdapter.getItem(position);
+                Toast.makeText(RecipeActivity.this, "Added " + clicked.getingredients().length + " items to shopping list.", Toast.LENGTH_SHORT).show();
+                ShoppingListActivity.addRecipe(mAdapter.getItem(position));
             }
         });
 
