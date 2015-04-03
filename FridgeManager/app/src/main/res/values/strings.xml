@@ -39,6 +39,8 @@
     <string name="title_activity_fridge">FridgeActivity</string>
     <string name="title_activity_recipe">RecipeActivity</string>
     <string name="Login">Login</string>
+    <string name="Done">Done</string>
+    <string name="Cancel">Cancel</string>
 
 
 </resources>
