@@ -34,12 +34,14 @@ import java.util.List;
 public class FridgeActivity extends ActionBarActivity {
     ArrayList<String> list;
     ArrayAdapter adapter;
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         fillFridge();
         setContentView(R.layout.activity_fridge);
+        context = getApplicationContext();
     }
 
 
@@ -66,6 +68,7 @@ public class FridgeActivity extends ActionBarActivity {
     }
 
     public void addItemToFridge(Food f){
+        f.saveInBackground();
         DateTime expire = new DateTime(f.getExpireDate());
         DateTime now = new DateTime(new Date());
         int daysLeft = Days.daysBetween(now, expire).getDays();
@@ -82,6 +85,7 @@ public class FridgeActivity extends ActionBarActivity {
 
                 for (Food f : results) {
                     addItemToFridge(f);
+                    Log.d("hi", f.getName());
                 }
 
                 Context context = getApplicationContext();
@@ -111,31 +115,33 @@ public class FridgeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 EditText editName = (EditText) dialogLayout.findViewById(R.id.editName);
                 String name = String.valueOf(editName.getText());
-                if(name.length() == 0){
-                    Context context = getApplicationContext();
-                    CharSequence text = "Must input name!";
+                EditText editAmount = (EditText) dialogLayout.findViewById(R.id.editAmount);
+                String amount = String.valueOf(editAmount.getText());
+                EditText editUnits = (EditText) dialogLayout.findViewById(R.id.editUnits);
+                String units = String.valueOf(editUnits.getText());
+                EditText editExpiration = (EditText) dialogLayout.findViewById(R.id.editExpiration);
+                String expiration = String.valueOf(editExpiration.getText());
+                Food newAddition = new Food();
+                newAddition.setName(name);
+                newAddition.setQuantity(Integer.parseInt(amount));
+                newAddition.setUnits(units);
+                if(name.length() == 0 || amount.length() == 0 || expiration.length() == 0){
+                    CharSequence text = "Please fill all inputs!";
                     Toast error = Toast.makeText(context, text, Toast.LENGTH_SHORT);
                     error.show();
                     return;
                 }
                 else{
-                    EditText editAmount = (EditText) dialogLayout.findViewById(R.id.editAmount);
-                    String amount = String.valueOf(editAmount.getText());
-                    EditText editUnits = (EditText) dialogLayout.findViewById(R.id.editUnits);
-                    String units = String.valueOf(editUnits.getText());
-                    EditText editExpiration = (EditText) dialogLayout.findViewById(R.id.editExpiration);
-                    String expiration = String.valueOf(editExpiration.getText());
-                    Food newAddition = new Food();
-                    newAddition.setName(name);
-                    newAddition.setQuantity(Double.parseDouble(amount));
-                    newAddition.setUnits(units);
                     SimpleDateFormat  format = new SimpleDateFormat("MM/dd/yyyy");
                     try {
                         newAddition.setExpireDate(format.parse(expiration));
                         addItemToFridge(newAddition);
                         adapter.notifyDataSetChanged();
                     } catch (java.text.ParseException e) {
-                        e.printStackTrace();
+                        CharSequence text = "Invalid date format!";
+                        Toast error = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+                        error.show();
+                        return;
                     }
                     dialog.dismiss();
                 }

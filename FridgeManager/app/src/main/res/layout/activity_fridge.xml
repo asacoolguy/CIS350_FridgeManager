@@ -19,21 +19,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp" />
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="133dp"
-            android:id="@+id/scrollView"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.15"
-            android:background="#ffedffe2"
-            android:clickable="true" >
+        <ListView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/dialog_fixed_width_minor"
+            android:id="@+id/fridgeView"
+            android:headerDividersEnabled="false"
+            android:smoothScrollbar="true"
+            android:textAlignment="center" />
 
-            <ListView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/fridgeView"
-                android:headerDividersEnabled="false" />
-        </ScrollView>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
