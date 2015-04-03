@@ -215,4 +215,12 @@ public class ShoppingListActivity extends ActionBarActivity {
         nametext.setText("");
         quantitytext.setText("");
     }
+    public static void addrecipe(Recipe list){
+        String[] ingredients = list.getingredients();
+        add(list.getName() + ":", 1);
+        for(int i=0; i<ingredients.length;i++){
+            add("   " +ingredients[i], 1);
+        }
+        add("end of "list.getName(), 0);
+    }
 }
