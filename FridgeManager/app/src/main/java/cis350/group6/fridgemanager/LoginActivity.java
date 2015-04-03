@@ -6,14 +6,27 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.content.Context;
+import android.widget.*;
+
+import org.apache.http.client.HttpClient;
+
+import java.io.IOException;
 
 
 public class LoginActivity extends ActionBarActivity {
+
+    private EditText passwordText, emailText;
+    private HTMLRequester htmlRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        passwordText = (EditText)findViewById(R.id.loginPassword);
+        emailText = (EditText)findViewById(R.id.loginEmail);
+        htmlRequester = HTMLRequester.getInstance();
     }
 
 
@@ -37,6 +50,45 @@ public class LoginActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Login button event handler. Makes the login request.
+     * @param v
+     */
+    public void onLoginButtonClick(View v) {
+
+        String email = emailText.getText().toString();
+        String password = passwordText.getText().toString();
+        String s = htmlRequester.doInBackground("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
+
+        debug(s);
+        boolean isValidated = validateLoginCredentials(email, password);
+        if (isValidated) {
+            Intent i = new Intent(this,FridgeActivity.class);
+            startActivityForResult(i, Constants.FridgeActivity_ID);
+            Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Incorrect login ID or password", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private boolean validateLoginCredentials(String email, String password) {
+        if (email.equals("test") && password.equals("1234")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void debug(String msg) {
+        Context context = getApplicationContext();
+        CharSequence text = msg;
+        int duration = Toast.LENGTH_SHORT;
+
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
     }
 
     public void onReturnButtonClick(View v){
