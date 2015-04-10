@@ -79,7 +79,6 @@ public class LoginActivity extends ActionBarActivity {
                 }
             }
         });
-        debug("swag");
         boolean isValidated = validateLoginCredentials(email, password);
         if (isValidated) {
             Intent i = new Intent(this,FridgeActivity.class);
