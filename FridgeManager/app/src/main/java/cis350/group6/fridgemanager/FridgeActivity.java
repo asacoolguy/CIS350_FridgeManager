@@ -36,7 +36,7 @@ import java.util.List;
 
 public class FridgeActivity extends ActionBarActivity {
     ArrayList<String> list;
-    ArrayList<Food> items;
+    static ArrayList<Food> items;
     ArrayAdapter adapter;
     Context context;
     int selected;
@@ -179,7 +179,7 @@ public class FridgeActivity extends ActionBarActivity {
                 newAddition.setQuantity(Integer.parseInt(amount));
                 newAddition.setUnits(units);
                 newAddition.setFavorite(favorite);
-                if(name.length() == 0 || amount.length() == 0 || expiration.length() == 0){
+                if(name.length() == 0 || amount.length() == 0 || units.length() == 0 || expiration.length() == 0){
                     CharSequence text = "Please fill all inputs!";
                     Toast error = Toast.makeText(context, text, Toast.LENGTH_SHORT);
                     error.show();
@@ -216,5 +216,9 @@ public class FridgeActivity extends ActionBarActivity {
 
     public void onReturnButtonClick(View v){
         finish();
+    }
+
+    public static ArrayList<Food> getFridgeItems(){
+        return items;
     }
 }

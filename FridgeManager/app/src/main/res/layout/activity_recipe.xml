@@ -53,6 +53,15 @@
         android:layout_below="@+id/Recipe_ReturnButton"
         android:inputType="text"
         android:imeOptions="actionSend" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search Recipes by Fridge Items"
+        android:id="@+id/RecipeFridgeSearchButton"
+        android:onClick="onFridgeSearchButtonClick"
+        android:layout_below="@+id/RecipeSearchButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
     <GridView
         android:layout_height="wrap_content"
         android:id="@+id/gridView1"
@@ -60,7 +69,7 @@
         android:numColumns="auto_fit"
         android:horizontalSpacing="10dp"
         android:verticalSpacing="10dp"
-        android:layout_below="@+id/RecipeSearchButton"
+        android:layout_below="@+id/RecipeFridgeSearchButton"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true">
     </GridView>

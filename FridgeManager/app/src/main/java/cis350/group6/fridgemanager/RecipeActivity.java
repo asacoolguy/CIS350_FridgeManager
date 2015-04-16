@@ -41,8 +41,6 @@ import java.util.concurrent.ExecutionException;
 public class RecipeActivity extends ActionBarActivity {
     public static String debugTag = "btag";
     private static GridViewAdapter mAdapter = null;
-    private ArrayList<String> listRecipeName;
-    private ArrayList<Integer> listRecipeImg;
     private ArrayList<Recipe> recipeList;
     private static ArrayList<JSONObject> JSONrecipes = null;
     private GridView gridView;
@@ -50,6 +48,7 @@ public class RecipeActivity extends ActionBarActivity {
     private EditText searchEditText;
     private String filteringCuisine = "all";
     private String filteringCourse = "all";
+    private ArrayList<String> filteringIngredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,10 +137,10 @@ public class RecipeActivity extends ActionBarActivity {
     {
         JSONObject searchReturn;
         if(searchEditText == null || searchEditText.getText().toString().equals("")){
-            searchReturn = searchRecipes("recipe",filteringCuisine, filteringCourse);
+            searchReturn = searchRecipes("recipe",filteringCuisine, filteringCourse, filteringIngredients);
         }
         else{
-            searchReturn = searchRecipes(searchEditText.getText().toString(),filteringCuisine, filteringCourse);
+            searchReturn = searchRecipes(searchEditText.getText().toString(),filteringCuisine, filteringCourse, filteringIngredients);
         }
         try {
             JSONArray returnedRecipes = searchReturn.getJSONArray("matches");
@@ -253,7 +252,7 @@ public class RecipeActivity extends ActionBarActivity {
     }
 
 
-    private JSONObject searchRecipes(String query, String cuisine, String course){
+    private JSONObject searchRecipes(String query, String cuisine, String course, ArrayList<String> ingredients){
         String executingURL = "http://api.yummly.com/v1/api/recipes?_app_id=01b9fa3b&_app_key=2eb9083c6cea006509068f9a5ee9bf97" +
                 "&q=" + query;
 
@@ -277,7 +276,17 @@ public class RecipeActivity extends ActionBarActivity {
             e.printStackTrace();
         }
 
+        // change the search query if filtering by ingredients
+        try{
+            if(ingredients != null && !ingredients.isEmpty()){
+                for(String i : ingredients){
+                    executingURL = executingURL + "&allowedIngredient" + URLEncoder.encode("[]", "UTF-8") + "=" + URLEncoder.encode(i, "UTF-8");
+                }
+            }
 
+        }catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
 
         try{
             JSONObject ans = new GetRecipeTask(this).execute(executingURL).get();
@@ -343,6 +352,21 @@ public class RecipeActivity extends ActionBarActivity {
     }
 
     public void onSearchButtonClick(View v){
+        filteringIngredients = null;
         refreshSearchResults();
+    }
+
+    public void onFridgeSearchButtonClick(View v){
+        ArrayList<Food> foodItems = FridgeActivity.getFridgeItems();
+        if(foodItems != null && !foodItems.isEmpty()){
+            filteringIngredients = new ArrayList<String>();
+            for(Food f : foodItems){
+                filteringIngredients.add(f.getName());
+            }
+            refreshSearchResults();
+        }
+        else{
+            Toast.makeText(RecipeActivity.this, "Nothing in the fridge!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
