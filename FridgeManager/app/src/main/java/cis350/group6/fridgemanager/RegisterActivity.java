@@ -11,9 +11,12 @@ import android.content.Context;
 import android.widget.*;
 
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
 
 import org.apache.http.client.HttpClient;
 
@@ -25,19 +28,21 @@ import java.util.List;
  */
 public class RegisterActivity extends ActionBarActivity {
 
-    private EditText passwordText, emailText, confirmPasswordText, firstName, lastName;
+    private EditText usernameText, passwordText, emailText, confirmPasswordText,
+            firstNameText, lastNameText;
     private HTMLRequester htmlRequester;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
 
-        firstName = (EditText) findViewById(R.id.firstName);
-        lastName = (EditText) findViewById(R.id.firstName);
-        passwordText = (EditText)findViewById(R.id.loginPassword);
-        confirmPasswordText = (EditText)findViewById(R.id.confirmPassword);
-        emailText = (EditText)findViewById(R.id.loginEmail);
+        usernameText = (EditText) findViewById(R.id.Username);
+//        firstNameText = (EditText) findViewById(R.id.FirstName);
+//        lastNameText = (EditText) findViewById(R.id.FirstName);
+        passwordText = (EditText)findViewById(R.id.RegisterPassword);
+        confirmPasswordText = (EditText)findViewById(R.id.ConfirmPassword);
+        emailText = (EditText)findViewById(R.id.LoginEmail);
     }
 
 
@@ -64,51 +69,72 @@ public class RegisterActivity extends ActionBarActivity {
     }
 
     /**
-     * Login button event handler. Makes the login request.
+     * Register button event handler. Makes the login request.
      * @param v
      */
-    public void onLoginButtonClick(View v) {
-
+    public void onRegisterButtonClick(View v) {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
-        //String s = htmlRequester.doInBackground("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("User");
-        query.whereEqualTo("Email", email);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(final List<ParseObject> userList, ParseException e) {
+        String confirmPassword = confirmPasswordText.getText().toString();
+//        String firstName = firstNameText.getText().toString();
+//        String lastName = lastNameText.getText().toString();
+        String username = usernameText.getText().toString();
+
+//        boolean isValidated = validateRegistration(firstName, lastName, email,
+//                password, confirmPassword);
+        boolean isValidated = validateRegistration(email, password, confirmPassword);
+        if (isValidated) {
+            addUserToDatabase(username, email, password);
+        }
+    }
+
+    /**
+     * Verifies if a new user can be created.
+     *
+     * @param email
+     * @param password
+     * @return
+     */
+    private boolean validateRegistration(String email, String password, String confirmPassword) {
+        //Passwords do not match
+        if (!password.equals(confirmPassword)) {
+            makeToast("Passwords do not match");
+            return false;
+        }
+        if (!(email.length() > 0 && password.length() > 0 && confirmPassword.length() > 0)) {
+            makeToast("Some fields are missing information");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void addUserToDatabase(String username, String email, String password) {
+        ParseUser parseUser = new ParseUser();
+        parseUser.setEmail(username);
+        parseUser.setUsername(email);
+        parseUser.setPassword(password);
+        parseUser.signUpInBackground(new SignUpCallback() {
+            public void done(ParseException e) {
                 if (e == null) {
-                    Log.d("score", "Retrieved " + userList.size() + " scores");
+                    // Show a simple Toast message upon successful registration
+                    Toast.makeText(getApplicationContext(),
+                            "Successfully Signed up, please log in.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
                 } else {
-                    Log.d("score", "Error: " + e.getMessage());
+                    Log.d("regis", e.getMessage());
+                    Toast.makeText(getApplicationContext(),
+                            "Sign up Error", Toast.LENGTH_LONG)
+                            .show();
+
                 }
             }
         });
-        boolean isValidated = validateLoginCredentials(email, password);
-        if (isValidated) {
-            Intent i = new Intent(this,FridgeActivity.class);
-            startActivityForResult(i, Constants.FridgeActivity_ID);
-            Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Incorrect login ID or password", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
-    private boolean validateLoginCredentials(String email, String password) {
-        if (email.equals("test") && password.equals("1234")) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void debug(String msg) {
-        Context context = getApplicationContext();
-        CharSequence text = msg;
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+    public void makeToast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
     public void onReturnButtonClick(View v){

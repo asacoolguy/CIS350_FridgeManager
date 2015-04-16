@@ -4,19 +4,25 @@ package cis350.group6.fridgemanager;
  * Created by David on 4/10/2015.
  */
 public class User {
-    private String firstName, lastName, emailAddress, password;
+    private String username, firstName, lastName, emailAddress, password;
     public User() {
+        username = "";
         firstName = "";
         lastName = "";
         emailAddress = "";
         password = "";
     }
 
-    public User(String firstName, String lastName, String emailAddress, String password) {
+    public User(String username, String firstName, String lastName, String emailAddress, String password) {
+        this.username = username;
         this.firstName = firstName;
         this. lastName = lastName;
         this.emailAddress = emailAddress;
         this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getName() {
@@ -39,6 +45,9 @@ public class User {
         return password;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }

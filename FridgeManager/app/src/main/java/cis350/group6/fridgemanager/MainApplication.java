@@ -16,6 +16,7 @@ public class MainApplication extends android.app.Application {
         Parse.enableLocalDatastore(this);
         ParseObject.registerSubclass(Food.class);
         Parse.initialize(this, "RPkBsLufAmYR4TCMTrcTX4Dgq0iSvaPRTvVMPxLB", "RZKk7RHWH2pNxCrDCp7bg73dOYWCMfOCwIXIDwtY");
+        ParseUser.enableAutomaticUser();
     }
 
 }

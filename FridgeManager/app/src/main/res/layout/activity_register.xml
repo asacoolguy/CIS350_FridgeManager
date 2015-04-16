@@ -6,20 +6,14 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="cis350.group6.fridgemanager.RegisterActivity">
 
-    <TextView android:text="@string/RegisterText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView2" />
-
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/RegisterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onLoginButtonClick"
+        android:onClick="onRegisterButtonClick"
         android:text="@string/Register"
         android:layout_above="@+id/Login_ReturnButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="28dp" />
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
@@ -27,41 +21,40 @@
         android:text="Go to Main Menu"
         android:id="@+id/Login_ReturnButton"
         android:onClick="onReturnButtonClick"
-        android:layout_marginBottom="45dp"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/firstName"
-        android:editable="true"
-        android:hint="First Name"
-        android:layout_above="@+id/lastName"
-        android:layout_centerHorizontal="true" />
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/FirstName"-->
+        <!--android:editable="true"-->
+        <!--android:hint="First Name"-->
+        <!--android:layout_above="@+id/LastName"-->
+        <!--android:layout_centerHorizontal="true" />-->
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPersonName"
-        android:ems="10"
-        android:id="@+id/lastName"
-        android:editable="true"
-        android:hint="Last Name"
-        android:layout_above="@+id/loginEmail"
-        android:layout_centerHorizontal="true" />
+    <!--<EditText-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:inputType="textPersonName"-->
+        <!--android:ems="10"-->
+        <!--android:id="@+id/LastName"-->
+        <!--android:editable="true"-->
+        <!--android:hint="Last Name"-->
+        <!--android:layout_above="@+id/LoginEmail"-->
+        <!--android:layout_centerHorizontal="true" />-->
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
-        android:id="@+id/loginEmail"
+        android:id="@+id/LoginEmail"
         android:editable="true"
         android:hint="Email"
-        android:layout_above="@+id/loginPassword"
+        android:layout_above="@+id/RegisterPassword"
         android:layout_centerHorizontal="true" />
 
     <EditText
@@ -69,20 +62,31 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/loginPassword"
+        android:id="@+id/RegisterPassword"
         android:editable="true"
         android:hint="Password"
-        android:layout_above="@+id/confirmPassword"
+        android:layout_above="@+id/ConfirmPassword"
         android:layout_centerHorizontal="true" />
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
-        android:id="@+id/confirmPassword"
+        android:id="@+id/ConfirmPassword"
         android:editable="true"
-        android:hint="Password"
-        android:layout_above="@+id/button1"
+        android:hint="Confirm Password"
+        android:layout_above="@+id/RegisterButton"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/Username"
+        android:editable="true"
+        android:hint="Username"
+        android:layout_above="@+id/LoginEmail"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

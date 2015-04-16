@@ -11,9 +11,11 @@ import android.content.Context;
 import android.widget.*;
 
 import com.parse.FindCallback;
+import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.apache.http.client.HttpClient;
 
@@ -23,7 +25,7 @@ import java.util.List;
 
 public class LoginActivity extends ActionBarActivity {
 
-    private EditText passwordText, emailText;
+    private EditText passwordText, usernameText;
     private HTMLRequester htmlRequester;
 
     @Override
@@ -31,8 +33,8 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        passwordText = (EditText)findViewById(R.id.loginPassword);
-        emailText = (EditText)findViewById(R.id.loginEmail);
+        passwordText = (EditText)findViewById(R.id.LoginPassword);
+        usernameText = (EditText)findViewById(R.id.LoginUsername);
         htmlRequester = HTMLRequester.getInstance();
     }
 
@@ -65,50 +67,65 @@ public class LoginActivity extends ActionBarActivity {
      */
     public void onLoginButtonClick(View v) {
 
-        String email = emailText.getText().toString();
+        String username = usernameText.getText().toString();
         String password = passwordText.getText().toString();
-        //String s = htmlRequester.doInBackground("http://api.reddit.com/r/all/search/?q=angular&after=t3_2xy59d&limit=10");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("User");
-        query.whereEqualTo("Email", email);
-        query.findInBackground(new FindCallback<ParseObject>() {
-            public void done(final List<ParseObject> userList, ParseException e) {
-                if (e == null) {
-                    Log.d("score", "Retrieved " + userList.size() + " scores");
+//        ParseQuery<ParseObject> query = ParseQuery.getQuery("User");
+//        query.whereEqualTo("Email", email);
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            public void done(final List<ParseObject> userList, ParseException e) {
+//                if (e == null) {
+//                    Log.d("score", "Retrieved " + userList.size() + " scores");
+//                    if (userList.size() > 0) {
+//
+//                    }
+//                } else {
+//                    Log.d("score", "Error: " + e.getMessage());
+//                }
+//
+//            }
+//        });
+        ParseUser.logInInBackground(username, password, new LogInCallback() {
+            public void done(ParseUser user, ParseException e) {
+                if (user != null) {
+                    // If user exist and authenticated, send user to Welcome.class
+                    Intent intent = new Intent(
+                            LoginActivity.this,
+                            FridgeActivity.class);
+                    startActivity(intent);
+                    Toast.makeText(getApplicationContext(),
+                            "Successfully Logged in",
+                            Toast.LENGTH_LONG).show();
+                    finish();
                 } else {
-                    Log.d("score", "Error: " + e.getMessage());
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "No such user exist, please signup",
+                            Toast.LENGTH_LONG).show();
                 }
             }
         });
-        boolean isValidated = validateLoginCredentials(email, password);
-        if (isValidated) {
-            Intent i = new Intent(this,FridgeActivity.class);
-            startActivityForResult(i, Constants.FridgeActivity_ID);
-            Toast.makeText(getApplicationContext(), "Welcome Back!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Incorrect login ID or password", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
-    private boolean validateLoginCredentials(String email, String password) {
-        if (email.equals("test") && password.equals("1234")) {
-            return true;
-        } else {
-            return false;
-        }
+//    private boolean validateLoginCredentials(String email, String password) {
+//        if (email.equals("test") && password.equals("1234")) {
+//            return true;
+//        } else {
+//            return false;
+//        }
+//    }
+
+    public void makeToast(String msg) {
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void debug(String msg) {
-        Context context = getApplicationContext();
-        CharSequence text = msg;
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+    public void onRegisterButtonClick(View v) {
+        Log.d("Test", "onRegisterButtonClick");
+        Intent i = new Intent(this,RegisterActivity.class);
+        startActivityForResult(i, Constants.RegisterActivity_ID);
     }
-
     public void onReturnButtonClick(View v){
         finish();
     }
+
 
 }
