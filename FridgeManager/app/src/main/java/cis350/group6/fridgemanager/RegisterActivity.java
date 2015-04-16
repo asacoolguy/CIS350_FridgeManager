@@ -20,10 +20,12 @@ import org.apache.http.client.HttpClient;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Created by David on 4/10/2015.
+ */
+public class RegisterActivity extends ActionBarActivity {
 
-public class LoginActivity extends ActionBarActivity {
-
-    private EditText passwordText, emailText;
+    private EditText passwordText, emailText, confirmPasswordText, firstName, lastName;
     private HTMLRequester htmlRequester;
 
     @Override
@@ -31,9 +33,11 @@ public class LoginActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        firstName = (EditText) findViewById(R.id.firstName);
+        lastName = (EditText) findViewById(R.id.firstName);
         passwordText = (EditText)findViewById(R.id.loginPassword);
+        confirmPasswordText = (EditText)findViewById(R.id.confirmPassword);
         emailText = (EditText)findViewById(R.id.loginEmail);
-        htmlRequester = HTMLRequester.getInstance();
     }
 
 

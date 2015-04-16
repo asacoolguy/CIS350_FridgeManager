@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -35,8 +36,10 @@ import java.util.List;
 
 public class FridgeActivity extends ActionBarActivity {
     ArrayList<String> list;
+    ArrayList<Food> items;
     ArrayAdapter adapter;
     Context context;
+    int selected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +47,7 @@ public class FridgeActivity extends ActionBarActivity {
         fillFridge();
         setContentView(R.layout.activity_fridge);
         context = getApplicationContext();
+        selected = -1; //nothing selected
     }
 
 
@@ -75,7 +79,7 @@ public class FridgeActivity extends ActionBarActivity {
         DateTime now = new DateTime(new Date());
         int daysLeft = Days.daysBetween(now, expire).getDays();
         list.add(f.getName() + "    " + f.getQuantity() +  "    " + f.getUnits() + "     days left: " + daysLeft);
-        Collections.sort(list, new FoodComparator());
+        items.add(f);
     }
 
     public void fillFridge(){
@@ -86,34 +90,74 @@ public class FridgeActivity extends ActionBarActivity {
             public void done(List<Food> results, ParseException e) {
                 ListView listview = (ListView) findViewById(R.id.fridgeView);
                 list = new ArrayList<String>();
+                items = new ArrayList<Food>();
 
                 // adds list of foods to result
                 for (Food f : results) {
                     addItemToFridge(f);
-                    Log.d("hi", f.getName());
                 }
 
                 Context context = getApplicationContext();
                 adapter = new ArrayAdapter(context, R.layout.list_item_fridge, list);
                 listview.setAdapter(adapter);
+                listview.setSelector(R.drawable.selection_indicator);
+                listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> list, View v, int pos, long id) {
+                        selected = pos;
+                        Log.d("hi", Integer.toString(pos));
+                    }
+                });
                 adapter.notifyDataSetChanged();
             }
         });
     }
 
+    public void onRemoveItemClick(View v){
+        if(selected >= 0){
+            Food toRemove = items.get(selected);
+            toRemove.deleteInBackground();
+            list.remove(selected);
+            adapter.notifyDataSetChanged();
+        }
+    }
+    public void onPlusItemClick(View v){
+        if(selected >= 0){
+            Food toInc = items.get(selected);
+            Log.d("hi", toInc.getName());
+            int currentAmount = toInc.getQuantity().intValue();
+            toInc.setQuantity(currentAmount+1);
+            toInc.saveInBackground();
+            DateTime expire = new DateTime(toInc.getExpireDate());
+            DateTime now = new DateTime(new Date());
+            int daysLeft = Days.daysBetween(now, expire).getDays();
+            list.set(selected,toInc.getName() + "    " + toInc.getQuantity() +  "    " + toInc.getUnits() + "    " + daysLeft + " days left");
+            adapter.notifyDataSetChanged();
+        }
+    }
+    public void onMinusItemClick(View v){
+        if(selected >= 0){
+            Food toDec = items.get(selected);
+            int currentAmount = toDec.getQuantity().intValue();
+            toDec.setQuantity(currentAmount-1);
+            toDec.saveInBackground();
+            DateTime expire = new DateTime(toDec.getExpireDate());
+            DateTime now = new DateTime(new Date());
+            int daysLeft = Days.daysBetween(now, expire).getDays();
+            list.set(selected,toDec.getName() + "    " + toDec.getQuantity() +  "    " + toDec.getUnits() + "    " + daysLeft + " days left");
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     public void onAddItemClick(View v){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogLayout = inflater.inflate(R.layout.dialog_add_item, null);
         builder.setView(dialogLayout);
         final Dialog dialog = builder.create();
+
         //store item on done button click
-        /*
-        editName = (EditText) dialogLayout.findViewById(R.id.editName);
-        editAmount = (EditText) dialogLayout.findViewById(R.id.editAmount);
-        editUnits = (EditText) dialogLayout.findViewById(R.id.editUnits);
-        editExpiration = (EditText) dialogLayout.findViewById(R.id.editExpiration);*/
         Button doneButton = (Button) dialogLayout.findViewById(R.id.doneButton);
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +201,7 @@ public class FridgeActivity extends ActionBarActivity {
                 }
             }
         });
+
         //close on cancel button click
         Button cancelButton = (Button) dialogLayout.findViewById(R.id.cancelButton);
         cancelButton.setOnClickListener(new View.OnClickListener() {
