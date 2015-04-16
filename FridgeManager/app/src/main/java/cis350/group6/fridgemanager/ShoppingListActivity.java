@@ -134,6 +134,29 @@ public class ShoppingListActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
+    public void deletecheckeditems(){
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("fordeletion");
+            List<ParseObject> ob = query.find();
+            ParseQuery<ParseObject> query2 = ParseQuery.getQuery("Shoppinglist");
+            List<ParseObject> ob2 = query.find();
+            int i =0;
+            for (ParseObject deletionsearch : ob) {
+                String deletionitem = (deletionsearch.getString("name"));
+                for (ParseObject shoppingsearch : ob2) {
+                    // Locate images in flag column
+                    String shoppingitem = (shoppingsearch.getString("name"));
+                    if (shoppingitem.equals(deletionitem)){
+                        remove(shoppingitem);
+                        deletionsearch.deleteInBackground();
+                    }
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public static void increment(String name){
         try {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
@@ -152,6 +175,46 @@ public class ShoppingListActivity extends ActionBarActivity {
             e.printStackTrace();
         }
     }
+    public static void markfordeletion(String name){
+        ParseObject newitem = new ParseObject("fordeletion");
+        newitem.put("name", name);
+        newitem.saveInBackground();
+    }
+    public static void unmarkfordeletion(String name){
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("fordeletion");
+            List<ParseObject>ob = query.find();
+            int i =0;
+            for (ParseObject deletionsearch : ob) {
+                // Locate images in flag column
+                String deletionitem = (deletionsearch.getString("name"));
+                if (deletionitem.equals(name)){
+                    deletionsearch.deleteInBackground();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    public static void decrement(String name){
+        try {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
+            List<ParseObject> ob = query.find();
+            int i =0;
+            for (ParseObject shoppingsearch : ob) {
+                // Locate images in flag column
+                String shoppingitem = (shoppingsearch.getString("name"));
+                if (shoppingitem.equals(name)){
+                    shoppingsearch.increment("quantity", -1);
+                    shoppingsearch.saveInBackground();
+                }
+            }
+        } catch (ParseException e) {
+            Log.e("Error", e.getMessage());
+            e.printStackTrace();
+        }
+    }
     public static void add(String name, int quantity){
         ParseObject newitem = new ParseObject("Shoppinglist");
         newitem.put("name", name);
@@ -160,6 +223,7 @@ public class ShoppingListActivity extends ActionBarActivity {
     }
     public void refresh(View v){
         List<shippingitem> shoppinglist = new ArrayList<shippingitem>();
+        deletecheckeditems();
         try {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("Shoppinglist");
             List<ParseObject> ob = query.find();
@@ -209,18 +273,25 @@ public class ShoppingListActivity extends ActionBarActivity {
         finish();
     }
     public void onNewItemClick(View v){
-        String name = nametext.getText().toString();
-        int quantity = Integer.parseInt(quantitytext.getText().toString());
+        String name= "forgot to enter";
+        try {name = nametext.getText().toString();}
+        catch(Exception e){}
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantitytext.getText().toString());
+        }catch (Exception e){
+            quantity=0;
+        }
         add(name, quantity);
         nametext.setText("");
         quantitytext.setText("");
     }
     public static void addRecipe(Recipe list){
         String[] ingredients = list.getingredients();
-        add(list.getName() + ":", 0);
+        add(list.getName().trim() + ":", 0);
         for(int i=0; i<ingredients.length;i++){
             add("   " +ingredients[i], 1);
         }
-        add("end of " + list.getName(), 0);
+        add("end of " + list.getName().trim(), 0);
     }
 }

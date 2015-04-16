@@ -2,23 +2,72 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity = "center_horizontal"
+        android:id="@+id/loginButtonLayout"
+        android:weightSum="1.0">
     <TextView
         android:id="@+id/name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.375"/>
 
     <TextView
         android:id="@+id/gap"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/name"
-        android:text = "         Quantity: "/>
+        android:text = "Quantity:"
+        android:layout_weight="0.175"/>
 
     <TextView
         android:id="@+id/quantity"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/gap" />
+        android:layout_toRightOf="@+id/gap"
+        android:layout_weight="0.075"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:gravity = "center_horizontal"
+        android:id="@+id/layoutofbuttons"
+        android:weightSum="1.0"
+        android:layout_weight="0.375"
+        android:layout_toRightOf="@+id/quantity" >
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=" + "
+        android:id="@+id/addbutton"
+        android:layout_weight="0.3"
+        android:layout_alignBottom="@+id/checkBox"
+        android:layout_alignParentTop="true"
+         />
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text=" - "
+        android:id="@+id/subtractbutton"
+        android:layout_toRightOf="@+id/addbutton"
+        android:layout_weight="0.3"
+        android:layout_alignBottom="@+id/checkBox"
+        android:layout_alignParentTop="true"
+        />
+
+    <CheckBox
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox"
+        android:layout_toRightOf="@+id/subtractbutton"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_weight="0.2"/>
+    </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>

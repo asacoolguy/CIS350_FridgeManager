@@ -9,7 +9,9 @@ import java.util.ArrayList;
         import android.view.View.OnClickListener;
         import android.view.ViewGroup;
         import android.widget.BaseAdapter;
-        import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageView;
         import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +35,9 @@ public class ListViewAdapter extends BaseAdapter {
     public class ViewHolder {
         TextView name;
         TextView quantity;
+        Button addbutton;
+        Button subtractbutton;
+        CheckBox deletebox;
     }
 
     @Override
@@ -58,6 +63,9 @@ public class ListViewAdapter extends BaseAdapter {
             // Locate the TextViews in listview_item.xml
             holder.name = (TextView) view.findViewById(R.id.name);
             holder.quantity = (TextView) view.findViewById(R.id.quantity);
+            holder.addbutton = (Button) view.findViewById(R.id.addbutton);
+            holder.subtractbutton =(Button) view.findViewById(R.id.subtractbutton);
+            holder.deletebox = (CheckBox) view.findViewById(R.id.checkBox);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -65,19 +73,28 @@ public class ListViewAdapter extends BaseAdapter {
         // Set the results into TextViews
         holder.name.setText(stringlist.get(position).getname());
         holder.quantity.setText(Integer.toString(stringlist.get(position).getquantity()));
-        view.setOnClickListener(new OnClickListener() {
+        holder.addbutton.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 ShoppingListActivity.increment((stringlist.get(position).getname()));
             }
         });
-        view.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.subtractbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public boolean onLongClick(View arg0) {
-                ShoppingListActivity.remove((stringlist.get(position).getname()));
-                return true;
+            public void onClick(View arg0) {
+                ShoppingListActivity.decrement((stringlist.get(position).getname()));
+            }
+        });
+        holder.deletebox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                if(holder.deletebox.isChecked()){
+                ShoppingListActivity.markfordeletion((stringlist.get(position).getname()));}
+                else{
+                ShoppingListActivity.unmarkfordeletion((stringlist.get(position).getname()));}
             }
         });
         return view;
